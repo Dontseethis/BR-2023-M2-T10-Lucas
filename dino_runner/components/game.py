@@ -41,7 +41,7 @@ class Game:
             self.events()
             self.update()
             self.draw()
- 
+
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -56,12 +56,12 @@ class Game:
 
     def update_score(self):
         self.score += 1
-        if self.score % 100 == 0:
-            self.game_speed += 5
+        if self.score % 100 == 0 and self.game_speed < 700:
+            self.game_speed += 1
 
     def draw(self):
         self.clock.tick(FPS)
-        self.screen.fill((255, 255, 255)) # "#FFFFFF"
+        self.screen.fill((255, 255, 255))  # "#FFFFFF"
         self.draw_background()
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
@@ -97,21 +97,29 @@ class Game:
         self.screen.fill((255, 255, 255))
         half_screen_height = SCREEN_HEIGHT // 2
         half_screen_width = SCREEN_WIDTH // 2
-        
+
         if self.death_count == 0:
             font = pygame.font.Font(FONT_STYLE, 22)
-            text = font.render("Press any key to start", True, (0, 0, 0))
+            text = font.render(
+                "Prescione qualquer tecla para iniciar", True, (0, 0, 0))
             text_rect = text.get_rect()
             text_rect.center = (half_screen_width, half_screen_height)
             self.screen.blit(text, text_rect)
         else:
             self.screen.blit(ICON, (half_screen_width - 20, half_screen_height - 140))
-            # mostrar mensagem de "Press any key to restart"
-            # mostrar score atingido
-            # mostrar death_count
-
-            ## Resetar score e game_speed quando o jogo for 'restartado'
-            ## criar método para remover a repetição de código para o texto
+            #self.generate_texte
 
         pygame.display.flip()
         self.handle_events_on_menu()
+
+    def reset_game(self):
+        self.obstacle_manager.reset_obstacles()
+        self.score = 0
+        self.game_speed = 20
+
+        # mostrar mensagem de "Press any key to restart"
+        # mostrar score atingido
+        # mostrar death_count
+
+        # Resetar score e game_speed quando o jogo for 'restartado'
+        # criar método para remover a repetição de código para o texto
