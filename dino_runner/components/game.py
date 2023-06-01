@@ -41,7 +41,7 @@ class Game:
         # Game loop: events - update - draw
         self.playing = True
         self.obstacle_manager.reset_obstacles()
-        self.power_up_manager.reset_power_ups()
+        self.power_up_manager.reset_power_up()
         self.game_speed = 15
         self.score = 0
         while self.playing:
@@ -65,7 +65,7 @@ class Game:
 
     def update_score(self):
         self.score += 1
-        if self.score % 100 == 0 and self.game_speed < 700:
+        if self.score % 100 == 0 and self.game_speed < 850:
             self.game_speed += 1
 
     def draw(self):

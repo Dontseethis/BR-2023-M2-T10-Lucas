@@ -23,7 +23,7 @@ class PowerUpManager:
                 game.player.shield = True
                 game.player.has_power_up = True
                 game.player.type = power_up.type
-                game.player.power_up_time = power_up.start.tim_time = (power_up.duration * 1000)
+                game.player.power_up_time = power_up.start_time + (power_up.duration * 1000)
                 self.power_ups.remove(power_up)
 
     def draw(self, screen):

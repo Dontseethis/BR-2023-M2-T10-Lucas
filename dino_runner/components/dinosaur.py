@@ -77,7 +77,7 @@ class Dinosaur(Sprite):
             self.jump_vel = JUMP_VEL
             
     def duck(self):
-        self.image = DUCKING[self.type][self.step_index // 5]
+        self.image = DUCK_IMG[self.type][self.step_index // 5]
         self.dino_rect = self.image.get_rect()
         self.dino_rect.x = X_POS
         self.dino_rect.y = Y_POS_DUCK
