@@ -5,15 +5,16 @@ pygame.init()
 pygame.mixer.init()
 
 # Global Constants
-TITLE = "Caçador de Deuses"
+TITLE = "Monster Hunter Adventures"
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
 FPS = 30
 IMG_DIR = os.path.join(os.path.dirname(__file__), "..", "assets")
 
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
 # Assets Constants
 ICON = pygame.image.load(os.path.join(IMG_DIR, "DinoWallpaper.png"))
-ICON_DEAD = pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoDead.png"))
 RESET = pygame.image.load(os.path.join(IMG_DIR, "Other/Reset.png"))
 
 SHIELD_SOUND= pygame.mixer.Sound(os.path.join(IMG_DIR, 'Sounds/dead.wav'))
@@ -30,13 +31,15 @@ RUNNING = [
 
 RUNNING_SHIELD = [
     pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoRun1Shield.png")).convert_alpha(),
-    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoRun2.png")).convert_alpha(),
+    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoRun2Shield.png")).convert_alpha(),
 ]
 
+
 RUNNING_HAMMER = [
-    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoDuck1Hammer.png")).convert_alpha(),
-    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoRun2.png")).convert_alpha(),
+    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoRun1Hammer.png")).convert_alpha(),
+    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoRun2Hammer.png")).convert_alpha(),
 ]
+
 
 JUMPING = pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoJump.png")).convert_alpha()
 JUMPING_SHIELD = pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoJumpShield.png")).convert_alpha()
@@ -49,12 +52,12 @@ DUCKING = [
 
 DUCKING_SHIELD = [
     pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoDuck1Shield.png")).convert_alpha(),
-    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoDuck2.png")).convert_alpha(),
+    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoDuck2Shield.png")).convert_alpha(),
 ]
 
 DUCKING_HAMMER = [
     pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoDuck1Hammer.png")).convert_alpha(),
-    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoDuck2.png")).convert_alpha(),
+    pygame.image.load(os.path.join(IMG_DIR, "Dino/DinoDuck2Hammer.png")).convert_alpha(),
 ]
 
 SMALL_CACTUS = [
@@ -62,9 +65,8 @@ SMALL_CACTUS = [
     pygame.image.load(os.path.join(IMG_DIR, "Cactus/SmallCactus2.png")).convert_alpha(),
     pygame.image.load(os.path.join(IMG_DIR, "Cactus/SmallCactus3.png")).convert_alpha(),
 ]
-
 LARGE_CACTUS = [
-    pygame.image.load(os.path.join(IMG_DIR, "Cactus/LargeCactus1.png")).convert_alpha(),
+    pygame.image.load(os.path.join(IMG_DIR, "Cactus/LargeCactus2.png")).convert_alpha(),
     pygame.image.load(os.path.join(IMG_DIR, "Cactus/LargeCactus2.png")).convert_alpha(),
     pygame.image.load(os.path.join(IMG_DIR, "Cactus/LargeCactus3.png")).convert_alpha(),
 ]
@@ -73,7 +75,7 @@ BIRD_SPRITE = pygame.image.load(os.path.join(IMG_DIR, "Bird/Bird.png")).convert_
 BIRD = []
 for i in range(4):
     img = BIRD_SPRITE.subsurface((i * 45, 0),(45, 30))
-    img = pygame.transform.scale(img, (45 * 2, 30* 2))
+    img = pygame.transform.scale(img, (45*2, 30*2))
     BIRD.append(img)
 
 CLOUD = pygame.image.load(os.path.join(IMG_DIR, 'Other/Cloud.png')).convert_alpha()
@@ -87,20 +89,12 @@ BG3 = pygame.image.load(os.path.join(IMG_DIR, 'Other/Parallax2.png')).convert_al
 BG4 = pygame.image.load(os.path.join(IMG_DIR, 'Other/Parallax3.png')).convert_alpha()
 BG5 = pygame.image.load(os.path.join(IMG_DIR, 'Other/Parallax4.png')).convert_alpha()
 
-HEART = pygame.image.load(os.path.join(IMG_DIR, 'Other/SmallHeart.png'))
 MENU = pygame.image.load(os.path.join(IMG_DIR, 'Other/MenuGame.png')).convert_alpha()
 
 DEFAULT_TYPE = "default"
 
-SHIELD_TYPE = "shield"
+FONT_STYLE = (os.path.join(IMG_DIR, 'Fonts\Pix.ttf'))
 
-HAMMER_TYPE = "martelo divino"
+SHIELD_TYPE = 'Poder do Divino'
 
-SHIELD_TYPE = "poder divino"
-
-BLACK = (0,0,0)
-WHITE = (255,255,255)
-BLUE = (0,0,255)
-AQUAMARINE = (127,255,212)
-CHOCOLATE = (210,105,30)
-RED = (255,0,0)
+HAMMER_TYPE = 'Martelo Divino'

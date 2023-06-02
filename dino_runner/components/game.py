@@ -1,18 +1,15 @@
 import pygame
-import random
 import time
+import random
 
-from dino_runner.utils.constants import MENU, BG, DEAD, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, RESET, DEFAULT_TYPE, BG2, BG3, BG4, BG5, CLOUD, ICON_DEAD
+from dino_runner.utils.constants import MENU, BG, DEAD, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, FONT_STYLE, RESET, DEFAULT_TYPE, DEAD, BG2, BG3, BG4, BG5
 from dino_runner.components.dinosaur import Dinosaur
-from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
+from dino_runner.components.obstacles.obstacle_manager import Obstacle_Manager
 from dino_runner.components.obstacles.cloud import Cloud
-from dino_runner.utils.text_util import draw_message_component
 from dino_runner.components.power_ups.power_up_manager import PowerUpManager
-
 HI_COLOR = pygame.Color(202, 197, 196)
 SCORE_COLOR = pygame.Color(202, 197, 196)
-
-half_screen_height = SCREEN_HEIGHT // 2
+half_screen_heigh = SCREEN_HEIGHT // 2
 half_screen_width = SCREEN_WIDTH // 2
 
 class Game:
@@ -25,8 +22,7 @@ class Game:
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.playing = False
-        self.running = False
-        self.game_speed = 20
+        self.game_speed = 5
         self.x_pos_bg = 0
         self.y_pos_bg = 380
         self.x_pos_bg2 = 0
@@ -37,15 +33,18 @@ class Game:
         self.y_pos_bg4 = 0
         self.x_pos_bg5 = 0
         self.y_pos_bg5 = 0
-        self.score = 0
-        self.death_count = 0
-        self.best_score = 0
+        
 
         self.player = Dinosaur()
-        self.obstacle_manager = ObstacleManager()
+        self.obstacle_manager = Obstacle_Manager()
         self.cloud = Cloud()
-        self.power_up_manager = PowerUpManager()
-         
+        self.running = False
+        self.score = 0
+        self.death_count = 0
+        self.power_ups_manager = PowerUpManager()
+        self.best_score = 0 
+        
+        
 
     def execute(self):
         self.running = True
@@ -53,46 +52,36 @@ class Game:
             pygame.mixer.music.play(-1)
             pygame.mixer.music.set_volume(0.3)
             if not self.playing:
+                self.game_over = True
                 self.show_menu()
         pygame.display.quit()
         pygame.quit()
 
     def run(self):
-        # Game loop: events - update - draw
+        # Base sequencial - Eventos - Updates - Draw
         self.reset_game()
         self.playing = True
-        self.obstacle_manager.reset_obstacles()
-        self.power_up_manager.reset_power_up()
-        self.game_speed = 15
-        self.score = 0
+        self.start_time = time.time()  # tempo em que o jogo começou
         while self.playing:
-            self.events()
+            self.events() 
             self.update()
             self.draw()
-            self.time_elapsed = int(time.time() - self.start_time) #tempo que passou desde o inicio do game
+            self.time_elapsed = int(time.time() - self.start_time)  # tempo que passou desde o início do jogo
 
+    
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.playing = False
-                self.running = False
-
+                
     def update(self):
+        self.update_score()
         user_input = pygame.key.get_pressed()
         self.player.update(user_input)
         self.obstacle_manager.update(self)
         self.cloud.update(self.game_speed)
-        self.update_score()
-        self.power_up_manager.update(self)
-
-    def update_score(self):
-        self.score += 1
-        if self.score % 100 == 0:
-            self.game_speed += 0.5
-
-        if self.score >= self.best_score:
-            self.best_score = self.score
-
+        self.power_ups_manager.update(self)
+        
     def draw(self):
         self.clock.tick(FPS)
         self.screen.fill((132, 209, 186))
@@ -100,14 +89,14 @@ class Game:
         self.draw_background4() #Parallax 3
         self.draw_background3() #Parallax 2
         self.draw_background2() #Parallax 1
-        self.draw_background()  #Track  
-        self.draw_time()
+        self.draw_background()  #Track
+        self.draw_score()
+        self.draw_power_up_time()
+        self.draw_time()  # exibe o tempo na tela
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.cloud.draw(self.screen)
-        self.draw_score()
-        self.draw_power_up_time()
-        self.power_up_manager.draw(self.screen)
+        self.power_ups_manager.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
 
@@ -122,12 +111,11 @@ class Game:
         image_width = BG.get_width()
         self.screen.blit(BG, (self.x_pos_bg, self.y_pos_bg))
         self.screen.blit(BG, (image_width + self.x_pos_bg, self.y_pos_bg))
-        self.screen.blit(CLOUD, (image_width + self.x_pos_bg, 150))
         if self.x_pos_bg <= -image_width:
             self.screen.blit(BG, (image_width + self.x_pos_bg, self.y_pos_bg))
             self.x_pos_bg = 0
         self.x_pos_bg -= self.game_speed
-
+    
     def draw_background2(self):
         image_width2 = BG2.get_width()
         self.screen.blit(BG2, (self.x_pos_bg2, self.y_pos_bg2))
@@ -138,7 +126,7 @@ class Game:
             if self.x_pos_bg2 <= -image_width2:
                 self.x_pos_bg2 = 0
         self.x_pos_bg2 -= self.game_speed - 2
-
+    
     def draw_background3(self):
         image_width3 = BG3.get_width()
         self.screen.blit(BG3, (self.x_pos_bg3, self.y_pos_bg3))
@@ -149,7 +137,7 @@ class Game:
             if self.x_pos_bg3 <= -image_width3:
                 self.x_pos_bg3 = 0
         self.x_pos_bg3 -= self.game_speed - 4
-
+    
     def draw_background4(self):
         image_width4 = BG4.get_width()
         self.screen.blit(BG4, (self.x_pos_bg4, self.y_pos_bg4))
@@ -171,21 +159,19 @@ class Game:
             if self.x_pos_bg5 <= -image_width5:
                 self.x_pos_bg5 = 0
         self.x_pos_bg5 -= self.game_speed - 8
-    
 
     def draw_score(self):
         self.generate_text(f"Pontuação: {self.score}", 910, 15, 20, SCORE_COLOR)
         self.generate_text(f"Melhor pontuação: {self.best_score}", 950, 35, 20, HI_COLOR)
-
+        
     def draw_power_up_time(self):
         if self.player.has_power_up:
-            time_to_show = round((self.player.power_up_time - pygame.time.get_ticks()) / 1000, 2)
+            time_to_show = round((self.player.power_time_up - pygame.time.get_ticks())/1000, 2)
             if time_to_show >= 0:
-                draw_message_component(
-                    f"{self.player.type.capitalize()} disponivel por {time_to_show} segungos",
-                    self.screen,
+                self.generate_text(
+                    f'{self.player.type.capitalize()}, disponível por {time_to_show} segundos',
                     550,
-                    50,
+                    50,  
                     18,
                     SCORE_COLOR,
                 )
@@ -193,17 +179,36 @@ class Game:
                 self.player.has_power_up = False
                 self.player.type = DEFAULT_TYPE
 
+    def update_score(self):
+        self.score += 1
+
+        if self.death_count >= 0:
+            if self.score % 100 == 0 and self.game_speed < 700:
+                self.game_speed += 1
+        
+        if self.score >= self.best_score:
+            self.best_score = self.score  
+
+
     def handle_events_on_menu(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                self.playing = False
                 self.running = False
+                self.playing = False
             elif event.type == pygame.KEYDOWN:
                 self.run()
 
+    def generate_text(self, text, half_screen_width, half_screen_heigh, size, color):
+        
+        font = pygame.font.Font(FONT_STYLE, size)
+        text = font.render(f"{text}", True, color)
+        text_rec = text.get_rect()
+        text_rec.center = (half_screen_width, half_screen_heigh)
+        self.screen.blit(text, text_rec)
+
     def show_menu(self):
-        self.screen.fill((255, 255, 255))
-        half_screen_height = SCREEN_HEIGHT // 2
+        self.screen.fill((63, 67, 112))
+        half_screen_heigh = SCREEN_HEIGHT // 2
         half_screen_width = SCREEN_WIDTH // 2
 
         if self.death_count == 0:
@@ -218,7 +223,13 @@ class Game:
             
             self.screen.blit(DEAD, ( half_screen_width - 70, half_screen_heigh - 150))
             self.screen.blit(RESET, ( half_screen_width - 55, half_screen_heigh + 227))
-
-        pygame.display.flip()
+       
+        pygame.display.update()
         self.handle_events_on_menu()
 
+    def reset_game(self):
+        self.obstacle_manager.reset_obstacles()
+        self.score = 0
+        self.game_speed = 20
+        self.power_ups_manager.reset_power_ups()
+        

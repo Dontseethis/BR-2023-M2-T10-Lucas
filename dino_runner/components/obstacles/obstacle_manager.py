@@ -1,35 +1,42 @@
 import pygame
 import random
 
-from dino_runner.components.obstacles.cactus import Cactus
-from dino_runner.components.obstacles.bird import Bird
-from dino_runner.components.power_ups.power_up_manager import PowerUpManager
+from dino_runner.utils.constants import SMALL_CACTUS, LARGE_CACTUS, BIRD, SHIELD_TYPE, HAMMER_TYPE, END_SOUND,HIT_SOUND
+from dino_runner.components.obstacles.Cactus import Cactus
+from dino_runner.components.obstacles.bird import bird
 
 
-class ObstacleManager:
+class Obstacle_Manager:
     def __init__(self):
         self.obstacles = []
 
     def update(self, game):
-        obstacle_type = [
-            Cactus(),
-            Bird(),
-        ]
         if len(self.obstacles) == 0:
-            self.obstacles.append(obstacle_type[random.randint(0,1)])
+            if random.randint(0, 2) == 0:
+                cactus = Cactus(SMALL_CACTUS, 325)
+                self.obstacles.append(cactus) 
+            elif random.randint(0, 2) == 1:
+                Lcactus = Cactus(LARGE_CACTUS, 300)
+                self.obstacles.append(Lcactus)
+            elif random.randint(0, 2) == 2:
+                Bird = bird(BIRD)
+                self.obstacles.append(Bird)
+
 
         for obstacle in self.obstacles:
             obstacle.update(game.game_speed, self.obstacles)
             if game.player.dino_rect.colliderect(obstacle.rect):
-                if not game.player.has_power_up:
-                    pygame.time.delay(500)
-                    game.playing = False
-                    game.death_count += 1
-                    break
+                if game.player.type != SHIELD_TYPE and game.player.type != HAMMER_TYPE:
+                     HIT_SOUND.play(0)
+                     pygame.time.delay(1000)
+                     game.death_count += 1
+                     game.playing = False
+                     END_SOUND.play(0)
+                     break
                 else:
                     self.obstacles.remove(obstacle)
 
-    def draw(self, screen):
+    def draw(self,screen):
         for obstacle in self.obstacles:
             obstacle.draw(screen)
 
