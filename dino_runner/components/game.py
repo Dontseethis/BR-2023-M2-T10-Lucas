@@ -7,10 +7,12 @@ from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import Obstacle_Manager
 from dino_runner.components.obstacles.cloud import Cloud
 from dino_runner.components.power_ups.power_up_manager import PowerUpManager
+
 HI_COLOR = pygame.Color(202, 197, 196)
 SCORE_COLOR = pygame.Color(202, 197, 196)
 half_screen_heigh = SCREEN_HEIGHT // 2
 half_screen_width = SCREEN_WIDTH // 2
+
 
 class Game:
     def __init__(self):
@@ -45,7 +47,6 @@ class Game:
         self.best_score = 0 
         
         
-
     def execute(self):
         self.running = True
         while self.running:
@@ -68,7 +69,6 @@ class Game:
             self.draw()
             self.time_elapsed = int(time.time() - self.start_time)  # tempo que passou desde o início do jogo
 
-    
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

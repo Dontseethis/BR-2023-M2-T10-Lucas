@@ -22,7 +22,6 @@ class Obstacle_Manager:
                 Bird = bird(BIRD)
                 self.obstacles.append(Bird)
 
-
         for obstacle in self.obstacles:
             obstacle.update(game.game_speed, self.obstacles)
             if game.player.dino_rect.colliderect(obstacle.rect):
@@ -32,8 +31,11 @@ class Obstacle_Manager:
                      game.death_count += 1
                      game.playing = False
                      END_SOUND.play(0)
-                     break
+                     #break
+                elif game.player.type == SHIELD_TYPE:
+                    return
                 else:
+                    game.player.type == HAMMER_TYPE
                     self.obstacles.remove(obstacle)
 
     def draw(self,screen):

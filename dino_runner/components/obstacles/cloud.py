@@ -13,7 +13,7 @@ class Cloud:
     def update(self, game_speed):
         self.x_pos_cloud -=  game_speed
         if self.x_pos_cloud < -self.image_width:
-            self.x_pos_cloud = SCREEN_WIDTH + random.randint(2500, 3000)
+            self.x_pos_cloud = SCREEN_WIDTH + random.randint(250, 300)
             self.y_pos_cloud = random.randint(50,100) 
 
     def draw(self, screen):
