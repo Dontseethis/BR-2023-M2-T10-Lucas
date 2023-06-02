@@ -22,6 +22,7 @@ class Game:
         self.y_pos_bg = 380
         self.score = 0
         self.death_count = 0
+        self.best_score = 0
 
         self.player = Dinosaur()
         self.obstacle_manager = ObstacleManager()
@@ -65,8 +66,11 @@ class Game:
 
     def update_score(self):
         self.score += 1
-        if self.score % 100 == 0 and self.game_speed < 850:
-            self.game_speed += 1
+        if self.score % 100 == 0:
+            self.game_speed += 0.5
+
+        if self.score >= self.best_score:
+            self.best_score = self.score
 
     def draw(self):
         self.clock.tick(FPS)
