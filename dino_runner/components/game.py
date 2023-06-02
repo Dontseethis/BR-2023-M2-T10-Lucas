@@ -2,7 +2,7 @@ import pygame
 import random
 import time
 
-from dino_runner.utils.constants import MENU, BG, DEAD, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, RESET, DEFAULT_TYPE, DEAD, BG2, BG3, BG4, BG5, CLOUD, ICON_DEAD
+from dino_runner.utils.constants import MENU, BG, DEAD, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, RESET, DEFAULT_TYPE, BG2, BG3, BG4, BG5, CLOUD, ICON_DEAD
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.components.obstacles.cloud import Cloud
@@ -11,8 +11,9 @@ from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 
 HI_COLOR = pygame.Color(202, 197, 196)
 SCORE_COLOR = pygame.Color(202, 197, 196)
-FONT_STYLE = "freesansbold.ttf"
 
+half_screen_height = SCREEN_HEIGHT // 2
+half_screen_width = SCREEN_WIDTH // 2
 
 class Game:
     def __init__(self):
@@ -58,6 +59,7 @@ class Game:
 
     def run(self):
         # Game loop: events - update - draw
+        self.reset_game()
         self.playing = True
         self.obstacle_manager.reset_obstacles()
         self.power_up_manager.reset_power_up()
@@ -172,9 +174,8 @@ class Game:
     
 
     def draw_score(self):
-        #draw_message_component(f"Score: {self.score}", self.screen, pos_x_center = 1000, pos_y_center = 50)
-        draw_message_component(f"Pontuação: {self.score}", 910, 15, 20, SCORE_COLOR)
-        draw_message_component(f"Melhor pontuação: {self.best_score}", 950, 35, 20, HI_COLOR)
+        self.generate_text(f"Pontuação: {self.score}", 910, 15, 20, SCORE_COLOR)
+        self.generate_text(f"Melhor pontuação: {self.best_score}", 950, 35, 20, HI_COLOR)
 
     def draw_power_up_time(self):
         if self.player.has_power_up:
@@ -183,9 +184,10 @@ class Game:
                 draw_message_component(
                     f"{self.player.type.capitalize()} disponivel por {time_to_show} segungos",
                     self.screen,
-                    font_size = 18,
-                    pos_x_center = 500,
-                    pos_y_center = 40
+                    550,
+                    50,
+                    18,
+                    SCORE_COLOR,
                 )
             else:
                 self.player.has_power_up = False
@@ -205,12 +207,17 @@ class Game:
         half_screen_width = SCREEN_WIDTH // 2
 
         if self.death_count == 0:
-            draw_message_component("Prescione qualquer tecla para iniciar o jogo", self.screen, pos_y_center = half_screen_height + 150 )
+            self.screen.blit(MENU, (0, 0))
         else:
-            draw_message_component("Tecle algo para reiniciar o game", self.screen, pos_y_center = half_screen_height + 140)
-            draw_message_component(f"Sua pontuação: {self.score}", self.screen, pos_y_center = half_screen_height + 100)
-            draw_message_component(f"Fracassos: {self.death_count}", self.screen, pos_y_center = half_screen_height + 50)
-            self.screen.blit(ICON_DEAD, (half_screen_width - 20, half_screen_height - 140))
+            self.generate_text("VOCÊ PERDEU!",  half_screen_width , half_screen_heigh - 220, 70, (41, 136, 145))
+            self.generate_text(f"PERDAS: {self.death_count}", half_screen_width, half_screen_heigh - 30, 25, SCORE_COLOR)
+            self.generate_text(f"PONTUAÇÃO: {self.score}",  half_screen_width, half_screen_heigh + 20, 25, SCORE_COLOR)
+            self.generate_text(f"MELHOR PONTUAÇÃO: {self.best_score}", half_screen_width, half_screen_heigh + 70, 25, (255, 187, 0))
+            self.generate_text(f"TEMPO DE SOBREVIVÊNCIA: {time_str}", half_screen_width, half_screen_heigh + 120, 25, SCORE_COLOR)
+            self.generate_text("TECLE ALGO PARA REINICIAR", half_screen_width, half_screen_heigh + 180, 50, (41, 136, 145))
+            
+            self.screen.blit(DEAD, ( half_screen_width - 70, half_screen_heigh - 150))
+            self.screen.blit(RESET, ( half_screen_width - 55, half_screen_heigh + 227))
 
         pygame.display.flip()
         self.handle_events_on_menu()
