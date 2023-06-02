@@ -5,7 +5,7 @@ pygame.init()
 pygame.mixer.init()
 
 # Global Constants
-TITLE = "Monster Hunter Adventures"
+TITLE = "Caçador de Monstros"
 SCREEN_HEIGHT = 600
 SCREEN_WIDTH = 1100
 FPS = 30
