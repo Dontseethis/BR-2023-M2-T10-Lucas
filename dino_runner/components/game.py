@@ -1,11 +1,17 @@
 import pygame
+import random
+import time
 
-from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, ICON_DEAD, CLOUD, DEFAULT_TYPE
+from dino_runner.utils.constants import MENU, BG, DEAD, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS, RESET, DEFAULT_TYPE, DEAD, BG2, BG3, BG4, BG5, CLOUD, ICON_DEAD
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.components.obstacles.cloud import Cloud
 from dino_runner.utils.text_util import draw_message_component
 from dino_runner.components.power_ups.power_up_manager import PowerUpManager
+
+HI_COLOR = pygame.Color(202, 197, 196)
+SCORE_COLOR = pygame.Color(202, 197, 196)
+FONT_STYLE = "freesansbold.ttf"
 
 
 class Game:
@@ -13,6 +19,8 @@ class Game:
         pygame.init()
         pygame.display.set_caption(TITLE)
         pygame.display.set_icon(ICON)
+        self.start_time = None
+        self.time_elapsed = None
         self.screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
         self.clock = pygame.time.Clock()
         self.playing = False
@@ -20,6 +28,14 @@ class Game:
         self.game_speed = 20
         self.x_pos_bg = 0
         self.y_pos_bg = 380
+        self.x_pos_bg2 = 0
+        self.y_pos_bg2 = 0
+        self.x_pos_bg3 = 0
+        self.y_pos_bg3 = 0
+        self.x_pos_bg4 = 0
+        self.y_pos_bg4 = 0
+        self.x_pos_bg5 = 0
+        self.y_pos_bg5 = 0
         self.score = 0
         self.death_count = 0
         self.best_score = 0
@@ -33,6 +49,8 @@ class Game:
     def execute(self):
         self.running = True
         while self.running:
+            pygame.mixer.music.play(-1)
+            pygame.mixer.music.set_volume(0.3)
             if not self.playing:
                 self.show_menu()
         pygame.display.quit()
@@ -49,6 +67,7 @@ class Game:
             self.events()
             self.update()
             self.draw()
+            self.time_elapsed = int(time.time() - self.start_time) #tempo que passou desde o inicio do game
 
     def events(self):
         for event in pygame.event.get():
@@ -74,8 +93,13 @@ class Game:
 
     def draw(self):
         self.clock.tick(FPS)
-        self.screen.fill((255, 255, 255))  # "#FFFFFF"
-        self.draw_background()
+        self.screen.fill((132, 209, 186))
+        self.draw_background5() #Parallax 4
+        self.draw_background4() #Parallax 3
+        self.draw_background3() #Parallax 2
+        self.draw_background2() #Parallax 1
+        self.draw_background()  #Track  
+        self.draw_time()
         self.player.draw(self.screen)
         self.obstacle_manager.draw(self.screen)
         self.cloud.draw(self.screen)
@@ -84,6 +108,13 @@ class Game:
         self.power_up_manager.draw(self.screen)
         pygame.display.update()
         pygame.display.flip()
+
+    def draw_time(self, x=10, y=10):
+        global time_str
+        time_str = time.strftime("%H:%M:%S", time.gmtime(self.time_elapsed))
+        font = pygame.font.Font(FONT_STYLE, 22)
+        time_surf = font.render(f"Tempo: {time_str}", True, SCORE_COLOR)
+        self.screen.blit(time_surf, (x, y))
 
     def draw_background(self):
         image_width = BG.get_width()
@@ -95,15 +126,62 @@ class Game:
             self.x_pos_bg = 0
         self.x_pos_bg -= self.game_speed
 
+    def draw_background2(self):
+        image_width2 = BG2.get_width()
+        self.screen.blit(BG2, (self.x_pos_bg2, self.y_pos_bg2))
+        self.screen.blit(BG2, (image_width2 + self.x_pos_bg2, self.y_pos_bg2))
+        self.screen.blit(BG2, (2*image_width2 + self.x_pos_bg2, self.y_pos_bg2))
+        if self.x_pos_bg2 <= -image_width2*0.5:
+            self.screen.blit(BG2, (3*image_width2 + self.x_pos_bg2, self.y_pos_bg2))
+            if self.x_pos_bg2 <= -image_width2:
+                self.x_pos_bg2 = 0
+        self.x_pos_bg2 -= self.game_speed - 2
+
+    def draw_background3(self):
+        image_width3 = BG3.get_width()
+        self.screen.blit(BG3, (self.x_pos_bg3, self.y_pos_bg3))
+        self.screen.blit(BG3, (image_width3 + self.x_pos_bg3, self.y_pos_bg3))
+        self.screen.blit(BG3, (2*image_width3 + self.x_pos_bg3, self.y_pos_bg3))
+        if self.x_pos_bg3 <= -image_width3*0.5:
+            self.screen.blit(BG3, (3*image_width3 + self.x_pos_bg3, self.y_pos_bg3))
+            if self.x_pos_bg3 <= -image_width3:
+                self.x_pos_bg3 = 0
+        self.x_pos_bg3 -= self.game_speed - 4
+
+    def draw_background4(self):
+        image_width4 = BG4.get_width()
+        self.screen.blit(BG4, (self.x_pos_bg4, self.y_pos_bg4))
+        self.screen.blit(BG4, (image_width4 + self.x_pos_bg4, self.y_pos_bg4))
+        self.screen.blit(BG4, (2*image_width4 + self.x_pos_bg4, self.y_pos_bg4))
+        if self.x_pos_bg4 <= -image_width4*0.5:
+            self.screen.blit(BG4, (3*image_width4 + self.x_pos_bg4, self.y_pos_bg4))
+            if self.x_pos_bg4 <= -image_width4:
+                self.x_pos_bg4 = 0
+        self.x_pos_bg4 -= self.game_speed - 6
+
+    def draw_background5(self):
+        image_width5 = BG5.get_width()
+        self.screen.blit(BG5, (self.x_pos_bg5, self.y_pos_bg5))
+        self.screen.blit(BG5, (image_width5 + self.x_pos_bg5, self.y_pos_bg5))
+        self.screen.blit(BG5, (2*image_width5 + self.x_pos_bg5, self.y_pos_bg5))
+        if self.x_pos_bg5 <= -image_width5*0.5:
+            self.screen.blit(BG5, (3*image_width5 + self.x_pos_bg5, self.y_pos_bg5))
+            if self.x_pos_bg5 <= -image_width5:
+                self.x_pos_bg5 = 0
+        self.x_pos_bg5 -= self.game_speed - 8
+    
+
     def draw_score(self):
-        draw_message_component(f"Score: {self.score}", self.screen, pos_x_center = 1000, pos_y_center = 50)
+        #draw_message_component(f"Score: {self.score}", self.screen, pos_x_center = 1000, pos_y_center = 50)
+        draw_message_component(f"Pontuação: {self.score}", 910, 15, 20, SCORE_COLOR)
+        draw_message_component(f"Melhor pontuação: {self.best_score}", 950, 35, 20, HI_COLOR)
 
     def draw_power_up_time(self):
         if self.player.has_power_up:
             time_to_show = round((self.player.power_up_time - pygame.time.get_ticks()) / 1000, 2)
             if time_to_show >= 0:
                 draw_message_component(
-                    f"{self.player.type.capitalize()} enabled for {time_to_show} seconds",
+                    f"{self.player.type.capitalize()} disponivel por {time_to_show} segungos",
                     self.screen,
                     font_size = 18,
                     pos_x_center = 500,
